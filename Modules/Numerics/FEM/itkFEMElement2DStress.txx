@@ -152,7 +152,7 @@ Element2DStress<TBaseClass>
     throw FEMExceptionIO(__FILE__,__LINE__,"Element2DStress::Write()","Error writing FEM element!. Parameter clid was not set!");
   }
 
-  /** First call the parent's write function */
+  // First call the parent's write function
   Superclass::Write(f,clid);
 
   /*
