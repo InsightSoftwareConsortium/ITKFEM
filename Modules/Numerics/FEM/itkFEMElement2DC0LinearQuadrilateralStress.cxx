@@ -27,8 +27,12 @@ namespace itk {
 namespace fem {
 
 
+
+
 Element2DC0LinearQuadrilateralStress
-::Element2DC0LinearQuadrilateralStress() : Element2DC0LinearQuadrilateral<2>(), m_mat(0) {}
+::Element2DC0LinearQuadrilateralStress() : Superclass()
+{
+}
 
 Element2DC0LinearQuadrilateralStress
 ::Element2DC0LinearQuadrilateralStress(
@@ -36,7 +40,7 @@ Element2DC0LinearQuadrilateralStress
       NodeIDType n2_,
       NodeIDType n3_,
       NodeIDType n4_,
-      Material::ConstPointer m_)
+      Material::ConstPointer m_) : Superclass()
 {
   // Set the geometrical points
   this->SetNode( 0, n1_ );
@@ -53,130 +57,6 @@ Element2DC0LinearQuadrilateralStress
   {
     throw FEMExceptionWrongClass(__FILE__,__LINE__,"Element2DC0LinearQuadrilateralStress::Element2DC0LinearQuadrilateralStress()");
   }
-}
-
-
-
-
-//////////////////////////////////////////////////////////////////////////
-/*
- * Methods related to the physics of the problem.
- */
-
-void Element2DC0LinearQuadrilateralStress
-::GetStrainDisplacementMatrix(MatrixType& B, const MatrixType& shapeDgl) const
-{
-  int p;
-  B.resize(3,8);
-  
-  // Copy the shape function derivatives wrt global coordinates
-  // in right position in B matrix.
-  for (int i=0; i<4; i++) {
-    // Compute B index
-    p = i << 1;
-
-    // Compute B elements
-    B[0][p]   = shapeDgl[0][i];
-    B[0][p+1] = 0;
-    B[1][p]   = 0;
-    B[1][p+1] = shapeDgl[1][i];
-    B[2][p]   = shapeDgl[1][i];
-    B[2][p+1] = shapeDgl[0][i];
-  }
-}
-
-
-
-
-void
-Element2DC0LinearQuadrilateralStress
-::GetMaterialMatrix(MatrixType& D) const
-{
-  D.resize(3,3);
-
-  /* Material properties matrix */
-  Float disot = (m_mat->h * m_mat->E)/(1.0 - (m_mat->ni*m_mat->ni));
-    
-  D[0][0] = disot;
-  D[0][1] = disot * (m_mat->ni);
-  D[0][2] = 0.0;
-
-  D[1][0] = D[0][1];
-  D[1][1] = disot;
-  D[1][2] = 0.0;
-
-  D[2][0] = 0.0;
-  D[2][1] = 0.0;
-  D[2][2] = disot * (1.0 - m_mat->ni)/2.0;
-}
-
-
-
-void
-Element2DC0LinearQuadrilateralStress
-::Read( std::istream& f, void* info )
-{
-  int n;
-  /*
-   * Convert the info pointer to a usable objects
-   */
-  Material::ArrayType::Pointer mats=static_cast<ReadInfoType*>(info)->m_mat;
-
-
-  /* first call the parent's read function */
-  Superclass::Read(f,info);
-
-  try
-  {
-    /*
-     * Read and set the material pointer
-     */
-    SkipWhiteSpace(f); f>>n; if(!f) goto out;
-    m_mat=dynamic_cast<const MaterialLinearElasticity*>( &*mats->Find(n));
-
-  }
-  catch ( FEMExceptionObjectNotFound e )
-  {
-    throw FEMExceptionObjectNotFound(__FILE__,__LINE__,"Element2DC0LinearQuadrilateralStress::Read()",e.m_baseClassName,e.m_GN);
-  }
-
-
-out:
-
-  if( !f )
-  { 
-    throw FEMExceptionIO(__FILE__,__LINE__,"Element2DC0LinearQuadrilateralStress::Read()","Error reading FEM element!");
-  }
-
-}
-
-
-
-/*
- * Write the element to the output stream.
- */
-void
-Element2DC0LinearQuadrilateralStress
-::Write( std::ostream& f, int clid ) const {
-
-  /* If not set already, se set the clid */
-  if (clid<0) clid=CLID;
-
-  /** First call the parent's write function */
-  Superclass::Write(f,clid);
-
-  /*
-   * then write the actual data (material number)
-   * We also add some comments in the output file
-   */
-  f<<"\t"<<m_mat->GN<<"\t% MaterialLinearElasticity ID\n";
-
-  // check for errors
-  if (!f)
-  { 
-    throw FEMExceptionIO(__FILE__,__LINE__,"Element2DC0LinearQuadrilateralStress::Write()","Error writing FEM element!");
-  }
-
 }
 
 

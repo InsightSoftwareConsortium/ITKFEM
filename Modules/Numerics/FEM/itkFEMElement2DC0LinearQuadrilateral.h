@@ -61,6 +61,8 @@ public:
    * Methods related to numeric integration
    */
 
+  enum { DefaultIntegrationOrder = 2 };
+
   virtual void GetIntegrationPointAndWeight(unsigned int i, VectorType& pt, Float& w, unsigned int order) const;
 
   virtual unsigned int GetNumberOfIntegrationPoints(unsigned int order) const;

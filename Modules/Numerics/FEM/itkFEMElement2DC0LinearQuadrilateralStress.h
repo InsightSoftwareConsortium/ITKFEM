@@ -19,7 +19,7 @@
 #define __itkFEMElement2DC0LinearQuadrilateralStress_h
 
 #include "itkFEMElement2DC0LinearQuadrilateral.h"
-#include "itkFEMMaterialLinearElasticity.h"
+#include "itkFEMElement2DStress.h"
 
 namespace itk {
 namespace fem {
@@ -28,25 +28,15 @@ namespace fem {
 
 
 /**
- * \class QuadPlaneStress
+ * \class Element2DC0LinearQuadrilateralStress
  * \brief 4-noded finite element class in 2D space for linear elasticity problem
  */
-class Element2DC0LinearQuadrilateralStress : public Element2DC0LinearQuadrilateral<2>
+class Element2DC0LinearQuadrilateralStress : public Element2DStress<Element2DC0LinearQuadrilateral<2> >
 {
-FEM_CLASS(Element2DC0LinearQuadrilateralStress,Element2DC0LinearQuadrilateral<2>)
+FEM_CLASS(Element2DC0LinearQuadrilateralStress,Element2DStress<Element2DC0LinearQuadrilateral<2> >)
 public:
 
   HANDLE_ELEMENT_LOADS();
-
-  /**
-   * Read data for this class from input stream
-   */
-  void Read( std::istream&, void* info );
-
-  /**
-   * Write this class to output stream
-   */
-  void Write( std::ostream& f, int clid ) const;
 
   /**
    * Default constructor only clears the internal storage
@@ -64,32 +54,7 @@ public:
       NodeIDType n4_,
       Material::ConstPointer p_ );
 
-
-
-//////////////////////////////////////////////////////////////////////////
-  /*
-   * Methods related to the physics of the problem.
-   */
-
-  /**
-   * Compute the B matrix.
-   */
-  virtual void GetStrainDisplacementMatrix(MatrixType& B, const MatrixType& shapeDgl) const;
-
-  /**
-   * Compute the D matrix.
-   */
-  virtual void GetMaterialMatrix(MatrixType& D) const;
-
-
-public:
-
-  /**
-   * Pointer to material properties of the element
-   */
-  MaterialLinearElasticity::ConstPointer m_mat;
-
-}; // class QuadPlaneStress
+}; // class Element2DC0LinearQuadrilateralStress
 
 FEM_CLASS_INIT(Element2DC0LinearQuadrilateralStress)
 
