@@ -15,6 +15,9 @@
 
 =========================================================================*/
 
+#ifndef __itkFEMLoadImplementationGenericBodyLoad_h
+#define __itkFEMLoadImplementationGenericBodyLoad_h
+
 #include "itkFEMElementBase.h"
 #include "itkFEMLoadGrav.h"
 
@@ -97,3 +100,5 @@ static void Dummy( void );
 #endif // #ifdef _MSC_VER
 
 }} // end namespace itk::fem
+
+#endif // #ifndef __itkFEMLoadImplementationGenericBodyLoad_h
