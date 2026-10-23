@@ -17,7 +17,7 @@
  *=========================================================================*/
 
 #include "itkFEMElementBase.h"
-#include "itkQRDecomposition.h"
+#include "itkBridgeQRDecomposition.h"
 
 namespace itk::fem
 {
@@ -305,7 +305,7 @@ Element::JacobianDeterminant(const VectorType & pt, const MatrixType * pJ) const
   }
 
   //  Float det=vnl_svd<Float>(*pJ).determinant_magnitude();
-  Float det = itk::QRDecomposition<Float>(*pJ).GetDeterminant();
+  Float det = itk::bridge::QRDecomposition<Float>(*pJ).GetDeterminant();
 
   return det;
 }
@@ -324,7 +324,7 @@ Element::JacobianInverse(const VectorType & pt, MatrixType & invJ, const MatrixT
   }
 
   //  invJ=vnl_svd_inverse<Float>(*pJ);
-  invJ = itk::QRDecomposition<Float>(*pJ).Inverse();
+  invJ = itk::bridge::QRDecomposition<Float>(*pJ).Inverse();
 }
 
 void
