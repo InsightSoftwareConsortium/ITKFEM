@@ -108,30 +108,17 @@ itkFEMElement2DC0LinearQuadrilateralStressTestFEMObjectReader(int argc, char * a
   ITK_TRY_EXPECT_NO_EXCEPTION(solver->Update());
 
   // ---- Verify solution values -----------------------------------------
-  // The 2D C0 linear quadrilateral has 4 nodes x 2 DOF/node = 8 DOFs.
-  // Boundary conditions fix DOFs 0, 1 (node 0) and 6, 7 (node 3) to zero.
-  // Nodal forces are applied to nodes 1 and 2 in the x-direction, so the
-  // unconstrained DOFs (2..5) must have non-zero displacement.
-  constexpr unsigned int NumDof = 8;
-  for (unsigned int i = 0; i < NumDof; ++i)
+  // Reference: 2x2 Gauss bilinear plane-stress solve; DOFs 0, 1, 6, 7 are fixed.
+  constexpr double expectedSolution[] = { 0.0, 0.0, 4.83149881e-07, 4.46625953e-09, 6.35983207e-07, -1.55810832e-07,
+                                          0.0, 0.0 };
+  constexpr double tolerance = 1e-14;
+  unsigned int     dof = 0;
+  for (const double expected : expectedSolution)
   {
-    const double soln = solver->GetSolution(i);
-    std::cout << "Solution[" << i << "] = " << soln << std::endl;
-  }
-
-  // Constrained DOFs must be exactly zero.
-  constexpr double   tolerance = 1e-7;
-  const unsigned int constrainedDofs[] = { 0, 1, 6, 7 };
-  for (const auto dof : constrainedDofs)
-  {
-    ITK_TEST_EXPECT_TRUE(itk::Math::Absolute(solver->GetSolution(dof)) < tolerance);
-  }
-
-  // Unconstrained DOFs must have non-zero displacement (forces applied).
-  const unsigned int unconstrainedDofs[] = { 2, 3, 4, 5 };
-  for (const auto dof : unconstrainedDofs)
-  {
-    ITK_TEST_EXPECT_TRUE(itk::Math::Absolute(solver->GetSolution(dof)) > tolerance);
+    const double soln = solver->GetSolution(dof);
+    std::cout << "Solution[" << dof << "] = " << soln << " (expected " << expected << ')' << std::endl;
+    ITK_TEST_EXPECT_TRUE(itk::Math::Absolute(soln - expected) < tolerance);
+    ++dof;
   }
 
   std::cout << "Test PASSED!" << std::endl;
